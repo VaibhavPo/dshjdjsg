@@ -13,7 +13,7 @@ export function Footer({ isLiveApi = false }: FooterProps) {
         <div className="status-item">
           <span className="status-indicator-dot pulse"></span>
           <span className="status-text">
-            <strong>BMRS Stream:</strong> {isLiveApi ? 'Connected to FastAPI Backend' : 'Elexon Jan 2026 Benchmark Feed Active'}
+            <strong>Backend API:</strong> {isLiveApi ? 'Connected to FastAPI on Render (dshjdjsg.onrender.com)' : 'Connecting to Render Backend...'}
           </span>
         </div>
         <div className="status-meta-group">

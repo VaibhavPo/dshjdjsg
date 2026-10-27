@@ -16,7 +16,8 @@ export function App() {
   const [timeseries, setTimeseries] = useState<TimeseriesPoint[]>([]);
   const [metrics, setMetrics] = useState<MetricsResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [isLiveApi, setIsLiveApi] = useState<boolean>(false);
+  const [isLiveApi, setIsLiveApi] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Procurement Calculator state
   const [expectedDemand, setExpectedDemand] = useState<number>(25000); // MW
@@ -25,13 +26,17 @@ export function App() {
   // Load data function
   const loadData = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const res = await fetchMarketData(cutoffHour, selectedDate);
       setTimeseries(res.timeseries);
       setMetrics(res.metrics);
       setIsLiveApi(res.isLiveApi);
-    } catch (err) {
-      console.error('Failed to load market data:', err);
+    } catch (err: unknown) {
+      console.error('Failed to load market data from Render backend:', err);
+      const msg = err instanceof Error ? err.message : 'Unknown backend connection error';
+      setError(msg);
+      setIsLiveApi(false);
     } finally {
       setLoading(false);
     }
@@ -71,6 +76,46 @@ export function App() {
             onRefresh={loadData}
             loading={loading}
           />
+
+          {/* Backend Connection Error Alert */}
+          {error && (
+            <div
+              style={{
+                background: '#fee2e2',
+                border: '1px solid #f87171',
+                borderRadius: '10px',
+                padding: '12px 18px',
+                marginBottom: '20px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                color: '#991b1b',
+                fontSize: '13px',
+                flexWrap: 'wrap',
+                gap: '10px',
+              }}
+            >
+              <span>
+                <strong>Render Backend Error:</strong> {error} &mdash; Backend:{' '}
+                <a
+                  href="https://dshjdjsg.onrender.com/docs"
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{ color: '#991b1b', textDecoration: 'underline' }}
+                >
+                  https://dshjdjsg.onrender.com
+                </a>
+              </span>
+              <button
+                type="button"
+                className="btn btn-sm"
+                onClick={loadData}
+                style={{ background: '#991b1b', color: '#ffffff' }}
+              >
+                Retry
+              </button>
+            </div>
+          )}
 
           {/* 2. Top Executive Metric Cards */}
           {metrics && metrics.summary && <MetricCards summary={metrics.summary} />}

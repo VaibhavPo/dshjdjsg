@@ -72,7 +72,7 @@ export function Header({
               <span className="brand-title">Grid Meridian</span>
               <span className="badge badge-primary font-mono">v4.2 PROD</span>
               <span className={`badge ${isLiveApi ? 'badge-green' : 'badge-amber'} font-mono`}>
-                {isLiveApi ? 'API Online' : 'Elexon Feed Active'}
+                {isLiveApi ? 'Render Backend (Live)' : 'Connecting to API...'}
               </span>
             </div>
             <p className="brand-subtitle">
